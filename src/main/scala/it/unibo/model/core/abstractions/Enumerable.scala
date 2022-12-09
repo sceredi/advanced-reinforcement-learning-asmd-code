@@ -15,10 +15,11 @@ object Enumerable:
   /** given a set of instance for the type A, it returns: A x A x .. x A following the elements parameter. e.g.; enum
     * State derives Enumerable: case On, Off
     *
-    * productOf[State](2) ==> List((On, On), (On, Off), (Off, On), (Off, Off)) productOf[State](3) ==> List((On, On,
-    * On), (Off, On, On), (Off, Off, On), (Off, Off, Off), ...)
+    * productOf[State](2) \==> List((On, On), (On, Off), (Off, On), (Off, Off))
+    *
+    * productOf[State](3) ==> List((On, On, On), (Off, On, On), (Off, Off, On), (Off, Off, Off), ...)
     */
-  def productOf[A: Enumerable](elements: Int): Enumerable[List[A]] =
+  def productOf[A: Enumerable](elements: Int): Enumerable[Seq[A]] =
     def product(n: Int, elements: List[A]): List[List[A]] =
       if n == 1 then elements.map(elem => List(elem))
       else product(n - 1, elements).flatMap(elem => elements.map(_ :: elem))
@@ -29,8 +30,9 @@ object Enumerable:
     def asEnumerable: Enumerable[A] = new Enumerable[A]:
       override def elements: IndexedSeq[A] = iterable.toIndexedSeq
 
-  /** Giving a set of instances of the type T, it returns that set plus the None type: enum State derives Enumerable:
-    * case On, Off
+  /** Giving a set of instances of the type T, it returns that set plus the None type:
+    *
+    * enum State derives Enumerable: case On, Off
     *
     * fromOption[State] ==> (Some(On), Some(Off), None)
     */

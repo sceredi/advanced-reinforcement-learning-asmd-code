@@ -1,6 +1,6 @@
 package it.unibo.model.examples.cooperative
 
-import it.unibo.model.core.abstractions.{Enumerable, MultiAgentContext, MultiAgentEnvironment}
+import it.unibo.model.core.abstractions.{Enumerable, MultiAgentEnvironment}
 
 import scala.util.Random
 
@@ -16,17 +16,15 @@ enum MovementAction derives Enumerable:
       case Right => ((x + 1) % bound, y)
       case NoOp => position
 
-class BoundedWorldContext extends MultiAgentContext:
-  type State = Collective[(Int, Int)]
+object BoundedWorldEnvironment:
+  type State = List[(Int, Int)]
   type Action = MovementAction
-  type Reward = Double
-  type Collective[A] = List[A]
 
-class BoundedWorldEnvironment(using context: BoundedWorldContext, random: Random)(agents: Int, boundSize: Int)
-    extends MultiAgentEnvironment[BoundedWorldContext]:
-  import context.* // to get the type
+class BoundedWorldEnvironment(using random: Random)(agents: Int, boundSize: Int)
+    extends MultiAgentEnvironment[BoundedWorldEnvironment.State, BoundedWorldEnvironment.Action]:
+  import BoundedWorldEnvironment.*
   var state: State = generatePosition
-  def act(actions: Collective[Action]): Collective[Reward] =
+  def act(actions: Seq[Action]): Seq[Double] =
     state = state.zip(actions).map { case (state, action) => action.updatePosition(state, boundSize) }
     val ys = state.distinctBy(_._1).size
     val xs = state.distinctBy(_._2).size

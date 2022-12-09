@@ -1,8 +1,7 @@
 package it.unibo.model.core.learning
 
 import it.unibo.model.core.network.NeuralNetworkEncoding
-import it.unibo.model.core.learning.ReplayBuffer.SingleAgentBuffer
-import it.unibo.model.core.abstractions.{AI, DecayReference, Enumerable, MultiAgentContext, Scheduler}
+import it.unibo.model.core.abstractions.{AI, DecayReference, Enumerable, Scheduler}
 import it.unibo.model.core.learning.Learner
 import me.shadaj.scalapy.py
 import me.shadaj.scalapy.py.SeqConverters
@@ -13,14 +12,14 @@ import scala.util.Random
 import it.unibo.model.core.abstractions.DecayReference.*
 
 class DeepQAgent[State, Action: Enumerable](
-    memory: SingleAgentBuffer[State, Action],
+    memory: ReplayBuffer[State, Action],
     epsilon: Ref[Double],
     gamma: Double,
     learningRate: Ref[Double],
     hiddenSize: Int = 32,
     batchSize: Int = 32,
     updateEach: Int = 100
-)(using stateEncoding: NeuralNetworkEncoding[State], random: Random, scheduler: Scheduler, c: MultiAgentContext)
+)(using stateEncoding: NeuralNetworkEncoding[State], random: Random, scheduler: Scheduler)
     extends AI.Agent[State, Action]
     with Learner[State, Action]:
   self =>

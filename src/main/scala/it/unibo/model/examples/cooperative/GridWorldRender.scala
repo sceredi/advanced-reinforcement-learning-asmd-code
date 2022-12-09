@@ -4,11 +4,11 @@ import it.unibo.view.Render
 import javax.swing.WindowConstants
 import java.awt.{Color, GridLayout}
 import javax.swing.{JButton, JFrame, JLabel, SwingUtilities}
-class GridWorldRender(using val context: BoundedWorldContext, scheduler: Scheduler)(
+class GridWorldRender(using scheduler: Scheduler)(
     bound: Int,
     await: Int,
     private var each: Int
-) extends Render[context.State] {
+) extends Render[BoundedWorldEnvironment.State] {
   private val frame = JFrame(s"Grid world render -- episode: ${scheduler.episode}")
   private val labels = (0 to bound).flatMap(i => (0 to bound).map(j => (i, j) -> new JLabel(s"$i, $j")))
   private val labelsMap = labels.toMap
@@ -18,7 +18,7 @@ class GridWorldRender(using val context: BoundedWorldContext, scheduler: Schedul
   frame.setSize(800, 600)
   frame.setVisible(true)
   frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
-  override def render(state: context.State): Unit = if (scheduler.episode % each == 0)
+  override def render(state: BoundedWorldEnvironment.State): Unit = if (scheduler.episode % each == 0)
     SwingUtilities.invokeAndWait { () =>
       frame.setTitle(s"Grid world render -- episode: ${scheduler.episode}")
       labelsMap.values.foreach(_.setBackground(Color.GRAY))
