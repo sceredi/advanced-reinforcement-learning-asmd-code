@@ -2,12 +2,14 @@ package it.unibo.model.core.abstractions
 import scala.util.Random
 
 /** TODO: idea, show how to create environment from dynamics, markov games, .. */
-trait Distribution[A](using random: Random):
+trait Distribution[A]:
   def sample: A
 
 object Distribution:
   def uniform[A: Enumerable](using random: Random): Distribution[A] = new Distribution[A]:
     override def sample: A = random.shuffle(Enumerable[A]).head
+  def one[A](value: A): Distribution[A] = new Distribution[A]:
+    override def sample: A = value
 
 trait StochasticGame[State, Action]:
   def agents: Int // agents
@@ -27,5 +29,3 @@ object StochasticGame:
         state = nextState.sample
         stochasticGame.rewardFunction(previousState, actions, state)
       override def reset(): Unit = state = stochasticGame.initialState.sample
-
-// Todo create a dsl for creating "dynamics"

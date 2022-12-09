@@ -6,6 +6,7 @@ import it.unibo.model.core.learning.QAgent
 import it.unibo.model.examples.Simulation
 import it.unibo.model.examples.competitive.MultiAgentTest.{episodeLength, episodes, simulator}
 import it.unibo.model.examples.competitive.RockPaperScissor.*
+import it.unibo.model.core.abstractions.StochasticGame
 import scala.util.Random
 
 object SingleAgentTest:
@@ -13,7 +14,7 @@ object SingleAgentTest:
   val episodeLength = 1000
   given Random = Random(42)
   given Scheduler = Scheduler()
-  val environment = RockPaperScissor.Environment()
+  val environment = StochasticGame.createEnvironment(RockPaperScissor.Dynamics())
   val simulator = Simulation[RockPaperScissor.State, RockPaperScissor.Action](environment)
 
   @main def simpleStrategy(): Unit =

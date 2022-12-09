@@ -1,6 +1,6 @@
 package it.unibo.model.examples.competitive
 
-import it.unibo.model.core.abstractions.{AI, Q, Scheduler}
+import it.unibo.model.core.abstractions.{AI, Q, Scheduler, StochasticGame}
 import it.unibo.model.examples.competitive.RockPaperScissor.Choice.Rock
 import it.unibo.model.examples.competitive.RockPaperScissor.{Action, State}
 import it.unibo.model.core.learning.QAgent
@@ -14,7 +14,7 @@ object MultiAgentTest:
   val episodeLength = 1000
   given Random = Random(42)
   given Scheduler = Scheduler()
-  val environment = RockPaperScissor.Environment()
+  val environment = StochasticGame.createEnvironment(RockPaperScissor.Dynamics())
   val simulator = Simulation[RockPaperScissor.State, RockPaperScissor.Action](environment)
 
   @main def againstItself(): Unit =

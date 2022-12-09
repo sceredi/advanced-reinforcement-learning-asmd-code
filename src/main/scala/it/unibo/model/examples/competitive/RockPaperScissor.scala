@@ -1,8 +1,13 @@
 package it.unibo.model.examples.competitive
 
-import it.unibo.model.core.abstractions.{Enumerable, MultiAgentEnvironment}
+import it.unibo.model.core.abstractions.{
+  Distribution,
+  Enumerable,
+  MultiAgentEnvironment,
+  StochasticGame,
+  AI as GeneralAI
+}
 import it.unibo.model.examples.competitive.RockPaperScissor.Choice.*
-import it.unibo.model.core.abstractions.{AI => GeneralAI}
 
 object RockPaperScissor {
 
@@ -12,8 +17,14 @@ object RockPaperScissor {
   type State = Seq[Option[Action]]
   type Action = Choice
 
-  class Environment extends MultiAgentEnvironment[State, Action]:
-    var state: State = Seq(None, None)
+  class Dynamics extends StochasticGame[State, Action] {
+    override def agents: Int = 2
+
+    override def initialState: Distribution[State] = Distribution.one(Seq(None, None))
+    override def transitionFunction: (State, Seq[Action]) => Distribution[State] =
+      (_, actions) => Distribution.one(actions.map(Some(_)))
+
+    override def rewardFunction: (State, Seq[Action], State) => Seq[Double] = (_, actions, _) => payoff(actions.toList)
 
     private def payoff(actions: List[Choice]): Seq[Double] = actions match
       case left :: right :: Nil if left == right => List(0, 0)
@@ -23,9 +34,5 @@ object RockPaperScissor {
       case left :: right :: Nil =>
         payoff(right :: left :: Nil).reverse
 
-    override def act(actions: Seq[Choice]): Seq[Double] =
-      state = actions.map(Some(_))
-      payoff(actions.toList)
-
-    def reset() = this.state = List(None, None)
+  }
 }
