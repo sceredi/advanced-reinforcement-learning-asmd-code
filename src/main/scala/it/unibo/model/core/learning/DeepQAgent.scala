@@ -42,24 +42,33 @@ class DeepQAgent[State, Action: Enumerable](
   val optimal: State => Action = state => actionFromNet(state, targetNetwork)
 
   override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
-    memory.insert(state, action, reward, nextState)
-    val memorySample = memory.sample(batchSize)
-    if (memory.sample(batchSize).size == batchSize)
+    memory.insert(state, action, reward, nextState) // record the current experience in the replay buffer
+    val memorySample = memory.sample(batchSize) // sample from the experience to improve the policy network
+    if (memory.sample(batchSize).size == batchSize) // wait to have enough samples
+      // get S_t, A_t, R_t+1 from the buffer
+      // Shape: [buffer_size, state_size]
       val states = memorySample.map(_.state).toSeq.map(state => stateEncoding.toSeq(state).toPythonCopy).toPythonCopy
+      // Shape: [buffer_size, action_size]
       val action = memorySample.map(_.action).toSeq.map(action => Enumerable[Action].indexOf(action)).toPythonCopy
+      // Shape: [buffer_size, 1]
       val rewards = torch.tensor(memorySample.map(_.reward).toSeq.toPythonCopy)
       val nextState =
         memorySample.map(_.nextState).toSeq.map(state => stateEncoding.toSeq(state).toPythonCopy).toPythonCopy
+      // Compute the next action, here will be perform the gradient descent
       val stateActionValue = policyNetwork(torch.tensor(states)).gather(1, torch.tensor(action).view(batchSize, 1))
+      // Get an approximation of max_Q(s_t, a_t) using the target network
       val nextStateValues = targetNetwork(torch.tensor(nextState)).max(1).bracketAccess(0).detach()
+      // Compute the usual expected value
       val expectedValue = (nextStateValues * gamma) + rewards
+      // Simular to MSE, but with L1 regularization
       val criterion = nn.SmoothL1Loss()
       val loss = criterion(stateActionValue, expectedValue.unsqueeze(1))
       writer.add_scalar("Loss", loss, scheduler.totalTicks)
-      optimizer.zero_grad()
-      loss.backward()
-      py"[param.grad.data.clamp_(-1, 1) for param in ${policyNetwork.parameters()}]"
-      optimizer.step()
+      optimizer.zero_grad() // clear old gradient
+      loss.backward() // compute new gradient
+      py"[param.grad.data.clamp_(-1, 1) for param in ${policyNetwork.parameters()}]" // clip the gradient, avoid overfitting and exploding gradient
+      optimizer.step() // improve the newtwork
+      // each updateEach, update the target network (moving target...)
       if scheduler.totalTicks % updateEach == 0 then targetNetwork.load_state_dict(policyNetwork.state_dict())
 
   private def actionFromNet(state: State, network: py.Dynamic): Action =
