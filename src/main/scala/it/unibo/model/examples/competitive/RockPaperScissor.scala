@@ -21,7 +21,7 @@ object RockPaperScissor {
       case Scissor :: Paper :: Nil => List(1, -1)
       case Paper :: Rock :: Nil => List(1, -1)
       case left :: right :: Nil =>
-        payoff(right :: left :: Nil)
+        payoff(right :: left :: Nil).reverse
 
     override def act(actions: Seq[Choice]): Seq[Double] =
       state = actions.map(Some(_))
