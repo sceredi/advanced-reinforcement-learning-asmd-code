@@ -1,10 +1,10 @@
-package it.unibo.model.examples.competitive
+package it.unibo.examples.competitive
 
 import it.unibo.model.core.abstractions.{AI, Enumerable, Q, Scheduler, StochasticGame}
-import it.unibo.model.examples.competitive.RockPaperScissor.Choice.Rock
-import it.unibo.model.examples.competitive.RockPaperScissor.{Action, State}
+import RockPaperScissor.Choice.Rock
+import RockPaperScissor.{Action, State}
+import it.unibo.examples.Simulation
 import it.unibo.model.core.learning.QAgent
-import it.unibo.model.examples.Simulation
 
 import scala.util.Random
 

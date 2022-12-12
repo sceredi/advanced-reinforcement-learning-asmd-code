@@ -1,7 +1,7 @@
 package it.unibo.model.core.abstractions
 
+import it.unibo.examples.competitive.RockPaperScissor
 import it.unibo.model.core.learning.Learner
-import it.unibo.model.examples.competitive.RockPaperScissor
 
 object AI:
   /** Agent internal mode. Some agents, even if are configured in the training mode, remain "stupid" and unable to

@@ -1,4 +1,4 @@
-package it.unibo.model.examples
+package it.unibo.examples
 
 import it.unibo.model.core.abstractions.{AI, MultiAgentEnvironment, Scheduler}
 import cats.{Align, Applicative, Foldable}
@@ -13,7 +13,6 @@ class Simulation[State, Action](using scheduler: Scheduler)(
 ):
   import environment.*
   private val writer = log.SummaryWriter()
-  // Kind of hard, better to avoid to show
   def simulate(episodes: Int, episodeLength: Int, agents: Seq[AI.Agent[State, Action]], learn: Boolean = true): Unit =
     agents.foreach(agent => if learn then agent.trainingMode() else agent.testMode())
     scheduler.reset()
@@ -38,7 +37,6 @@ class Simulation[State, Action](using scheduler: Scheduler)(
       writer.add_scalar(s"Reward+$learn", totalRewards.sumAll, scheduler.episode)
       println(s"Episode $episode, statistics: $totalRewards")
 
-  // Kind of hard, better to avoid to show
   def simulateCentralController(
       episodes: Int,
       episodeLength: Int,

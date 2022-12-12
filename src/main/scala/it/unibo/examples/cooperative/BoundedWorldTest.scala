@@ -1,11 +1,12 @@
-package it.unibo.model.examples.cooperative
+package it.unibo.examples.cooperative
+
 import cats.{Eval, Reducible}
-import it.unibo.model.examples.Simulation
 import cats.Reducible
 import it.unibo.model.core.abstractions.Enumerable.*
 
 import scala.util.Random
 import cats.implicits.*
+import it.unibo.examples.Simulation
 import it.unibo.model.core.abstractions.{AI, DecayReference, Enumerable, Q, Scheduler}
 import it.unibo.model.core.learning.{DeepQAgent, QAgent, ReplayBuffer}
 import it.unibo.model.core.network.NeuralNetworkEncoding

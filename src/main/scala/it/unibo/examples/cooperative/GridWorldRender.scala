@@ -1,4 +1,5 @@
-package it.unibo.model.examples.cooperative
+package it.unibo.examples.cooperative
+
 import it.unibo.model.core.abstractions.Scheduler
 import it.unibo.view.Render
 import javax.swing.WindowConstants

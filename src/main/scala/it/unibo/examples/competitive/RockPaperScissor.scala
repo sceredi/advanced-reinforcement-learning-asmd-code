@@ -1,4 +1,4 @@
-package it.unibo.model.examples.competitive
+package it.unibo.examples.competitive
 
 import it.unibo.model.core.abstractions.{
   Distribution,
@@ -7,7 +7,7 @@ import it.unibo.model.core.abstractions.{
   StochasticGame,
   AI as GeneralAI
 }
-import it.unibo.model.examples.competitive.RockPaperScissor.Choice.*
+import RockPaperScissor.Choice.*
 
 object RockPaperScissor {
 
@@ -17,7 +17,7 @@ object RockPaperScissor {
   type State = Seq[Option[Action]]
   type Action = Choice
 
-  class Dynamics extends StochasticGame[State, Action] {
+  class Dynamics extends StochasticGame[State, Action]:
     override def agents: Int = 2
 
     override def initialState: Distribution[State] = Distribution.one(Seq(None, None))
@@ -33,6 +33,4 @@ object RockPaperScissor {
       case Paper :: Rock :: Nil => List(1, -1)
       case left :: right :: Nil =>
         payoff(right :: left :: Nil).reverse
-
-  }
 }

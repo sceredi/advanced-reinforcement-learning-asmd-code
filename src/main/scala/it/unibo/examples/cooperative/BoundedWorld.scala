@@ -1,4 +1,4 @@
-package it.unibo.model.examples.cooperative
+package it.unibo.examples.cooperative
 
 import it.unibo.model.core.abstractions.{Enumerable, MultiAgentEnvironment}
 
