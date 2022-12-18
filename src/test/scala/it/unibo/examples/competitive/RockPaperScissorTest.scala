@@ -2,7 +2,7 @@ package it.unibo.examples.competitive
 import org.scalatest.flatspec.AnyFlatSpec
 import it.unibo.model.core.abstractions.StochasticGame
 import it.unibo.examples.competitive.RockPaperScissor.Choice.*
-import org.scalatest._
+import org.scalatest.*
 class RockPaperScissorTest extends AnyFlatSpec with BeforeAndAfterEach:
   var environment = StochasticGame.createEnvironment(RockPaperScissor.Dynamics())
   "Rock paper scissor environment" should "has as an initial state, (None, None)" in {
