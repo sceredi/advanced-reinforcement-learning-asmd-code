@@ -38,45 +38,55 @@ object BoundedWorldTest:
     val same = Q.zeros[State, Action]
     val agents =
       environment.state.map(_ => QAgent(same, 0.1, 0.99, DecayReference.exponentialDecay(0.9, 0.01).bounded(0.01)))
-    simulator.simulate(longTraining, episodeLength, agents, true)
+    agents.foreach(_.trainingMode())
+    simulator.simulate(longTraining, episodeLength, agents)
+    agents.foreach(_.testMode())
     render.renderEach(showEachInTest)
-    simulator.simulate(testEpisodes, episodeLength, agents, false)
+    simulator.simulate(testEpisodes, episodeLength, agents)
 
   @main def independentLearner(): Unit =
     val agents = environment.state.map(_ =>
       QAgent(Q.zeros[State, Action], 0.05, 0.99, DecayReference.exponentialDecay(0.9, 0.01).bounded(0.01))
     )
-    simulator.simulate(trainingEpisodes, episodeLength, agents, true)
+    agents.foreach(_.trainingMode())
+    simulator.simulate(trainingEpisodes, episodeLength, agents)
+    agents.foreach(_.testMode())
     render.renderEach(showEachInTest)
-    simulator.simulate(testEpisodes, episodeLength, agents, false)
+    simulator.simulate(testEpisodes, episodeLength, agents)
 
   @main def centralController(): Unit =
     val qTable = Q.zeros[State, Seq[Action]]
     val centralAgent = QAgent(qTable, 0.05, 0.99, 0.05)
-    simulator.simulateCentralController(trainingEpisodes, episodeLength, centralAgent, true)
+    centralAgent.trainingMode()
+    simulator.simulateCentralController(trainingEpisodes, episodeLength, centralAgent)
+    centralAgent.testMode()
     render.renderEach(showEachInTest)
-    simulator.simulateCentralController(testEpisodes, episodeLength, centralAgent, false)
+    simulator.simulateCentralController(testEpisodes, episodeLength, centralAgent)
 
   @main def deepQLearner(): Unit =
     val agents = environment.state.map(_ =>
       val memory: ReplayBuffer[State, Action] = ReplayBuffer.bounded(bufferSize)
       DeepQAgent(memory, DecayReference.exponentialDecay(0.9, 0.01).bounded(0.01), 0.99, 0.05, 32, 2000)
     )
-    simulator.simulate(trainingEpisodes, episodeLength, agents, true)
+    agents.foreach(_.trainingMode())
+    simulator.simulate(trainingEpisodes, episodeLength, agents)
+    agents.foreach(_.testMode())
     render.renderEach(showEachInTest)
-    simulator.simulate(testEpisodes, episodeLength, agents, false)
+    simulator.simulate(testEpisodes, episodeLength, agents)
 
   @main def sharedDeepQLearner(): Unit =
     val memory: ReplayBuffer[State, Action] = ReplayBuffer.bounded(bufferSize)
     val qLearner = DeepQAgent(memory, DecayReference.exponentialDecay(0.9, 0.01).bounded(0.01), 0.99, 0.005, 64, 1000)
     val agents = qLearner :: environment.state.tail.map(_ => qLearner.slave())
-    simulator.simulate(trainingEpisodes, episodeLength, agents, true)
+    agents.foreach(_.trainingMode())
+    simulator.simulate(trainingEpisodes, episodeLength, agents)
     render.renderEach(showEachInTest)
-    simulator.simulate(testEpisodes, episodeLength, agents, false)
+    agents.foreach(_.testMode())
+    simulator.simulate(testEpisodes, episodeLength, agents)
 
   @main def centralControllerDeep(): Unit =
     val memory: ReplayBuffer[State, Seq[Action]] = ReplayBuffer.bounded(bufferSize)
     val learner = DeepQAgent(memory, DecayReference.exponentialDecay(0.9, 0.01).bounded(0.01), 0.99, 0.005, 64, 5000)
-    simulator.simulateCentralController(trainingEpisodes, episodeLength, learner, true)
+    simulator.simulateCentralController(trainingEpisodes, episodeLength, learner)
     render.renderEach(showEachInTest)
-    simulator.simulateCentralController(testEpisodes, episodeLength, learner, false)
+    simulator.simulateCentralController(testEpisodes, episodeLength, learner)

@@ -1,5 +1,4 @@
 package it.unibo.model.core.learning
-import it.unibo.model.core.abstractions.AI.AgentMode
 import it.unibo.model.core.abstractions.DecayReference.Ref
 import it.unibo.model.core.abstractions.{AI, Enumerable, Q}
 
@@ -18,12 +17,12 @@ class QAgent[State, Action: Enumerable](
     if random.nextDouble() < epsilon.value then random.shuffle(Enumerable[Action]).head
     else optimal(state)
 
-  override def record(
+  override def improve(
       state: State,
       action: Action,
       reward: Double,
       nextState: State
-  ): Unit = if (mode == AgentMode.Training)
+  ): Unit =
     val qT = q(state, action)
     val (_, qMax) = bestOutcome(nextState)
     val update = qT + alpha.value * (reward + gamma * qMax - qT)

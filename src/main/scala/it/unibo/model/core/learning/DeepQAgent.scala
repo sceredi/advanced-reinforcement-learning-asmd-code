@@ -27,11 +27,12 @@ class DeepQAgent[State, Action: Enumerable](
   private val policyNetwork = DQN(stateEncoding.elements, hiddenSize, Enumerable[Action].size)
   private val writer = log.SummaryWriter()
 
-  def slave(): AI.Agent[State, Action] = new AI.Agent[State, Action] with Learner[State, Action]:
-    override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
-      memory.insert(state, action, reward, nextState)
-    val behavioural = self.behavioural
-    val optimal = self.optimal
+  def slave(): AI.Agent[State, Action] with Learner[State, Action] =
+    new AI.Agent[State, Action] with Learner[State, Action]:
+      override def improve(state: State, action: Action, reward: Double, nextState: State): Unit =
+        memory.insert(state, action, reward, nextState)
+      val behavioural = self.behavioural
+      val optimal = self.optimal
 
   private val optimizer = optim.RMSprop(policyNetwork.parameters(), learningRate.value)
 
@@ -41,7 +42,7 @@ class DeepQAgent[State, Action: Enumerable](
 
   val optimal: State => Action = state => actionFromNet(state, targetNetwork)
 
-  override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
+  override def improve(state: State, action: Action, reward: Double, nextState: State): Unit =
     memory.insert(state, action, reward, nextState) // record the current experience in the replay buffer
     val memorySample = memory.sample(batchSize) // sample from the experience to improve the policy network
     if (memory.sample(batchSize).size == batchSize) // wait to have enough samples

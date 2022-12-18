@@ -4,21 +4,10 @@ import it.unibo.examples.competitive.RockPaperScissor
 import it.unibo.model.core.learning.Learner
 
 object AI:
-  /** Agent internal mode. Some agents, even if are configured in the training mode, remain "stupid" and unable to
-    * process experience
-    */
-  enum AgentMode:
-    case Training, Test
-
   /** An entity that perceives a observation (e.g., the environment state, an agent observation, ...) and produces
     * actions that could be handled by an environment
     */
   trait Agent[-Observation, Action]:
-    private var modeMemory = AgentMode.Test
-
-    /** Current mode followed by this agent */
-    def mode: AgentMode = modeMemory
-
     /** Using the observation, it chooses an action */
     def act(state: Observation): Action
 
@@ -30,12 +19,6 @@ object AI:
     /** Reset any internal agent structure using during test/training */
     def reset(): Unit = {}
 
-    /** Enter in training mode (in some agents this could not perform any effect) */
-    def trainingMode(): Unit = this.modeMemory = AgentMode.Training
-
-    /** Enter in the test mode */
-    def testMode(): Unit = this.modeMemory = AgentMode.Test
-
   /** Sometime certain agent has a limited vision of the environment. This class could be used in this case, creating an
     * agent that has only a partial observability of the environment.
     */
@@ -44,8 +27,6 @@ object AI:
     override def act(state: State): Action = agent.act(conversion(state))
     override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
       agent.record(conversion(state), action, reward, conversion(nextState))
-    override def trainingMode(): Unit = agent.trainingMode()
-    override def testMode(): Unit = agent.testMode()
     override def reset(): Unit = agent.reset()
 
   // Helper to adapt an agent

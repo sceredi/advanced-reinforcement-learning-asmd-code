@@ -22,22 +22,27 @@ object MultiAgentTest:
     val qTable = Q.zeros[State, Action]
     val qLeaner = QAgent[State, Action](qTable, 0.1, 0.9, 0.05)
     println("Training... ")
+    qLeaner.trainingMode()
     simulator.simulate(episodes, episodeLength, List(qLeaner, qLeaner))
+    qLeaner.testMode()
     println("Test...")
-    simulator.simulate(episodes, episodeLength, List(qLeaner, qLeaner), false)
+    simulator.simulate(episodes, episodeLength, List(qLeaner, qLeaner))
     Q.renderBest(qTable)
 
   @main def concurrentLearning(): Unit =
     val leftQ = Q.zeros[Option[Action], Action]
     val rightQ = Q.zeros[Option[Action], Action]
     val agentLeft = QAgent(leftQ, 0.1, 0.9, 0.05)
-      .adapter[State](state => state(1)) // second agent
     val agentRight = QAgent(rightQ, 0.1, 0.9, 0.05)
-      .adapter[State](state => state.head) // first agent
     println("Training... ")
-    simulator.simulate(episodes, episodeLength, List(agentLeft, agentRight))
-    println("Test...")
-    simulator.simulate(episodes, episodeLength, List(agentLeft, agentRight), false)
+    agentLeft.trainingMode()
+    agentRight.trainingMode()
+    val adapterLeft = agentLeft.adapter[State](state => state(1))
+    val adapterRight = agentRight.adapter[State](state => state.head)
+    simulator.simulate(episodes, episodeLength, List(adapterLeft, adapterRight))
+    agentLeft.testMode()
+    agentRight.testMode()
+    simulator.simulate(episodes, episodeLength, List(adapterLeft, adapterRight))
     println("LEFT Q")
     Q.renderBest(leftQ)
     println("RIGHT Q")
@@ -46,8 +51,12 @@ object MultiAgentTest:
   @main def unfairConcurrentLearning(): Unit =
     val agentLeft = QAgent(Q.zeros[State, Action], 0.1, 0.9, 0.05)
     val agentRight = QAgent(Q.zeros[Unit, Action], 0.1, 0.9, 0.05)
-      .adapter[State](_ => ())
     println("Training... ")
-    simulator.simulate(episodes, episodeLength, List(agentLeft, agentRight))
+    val rightAdapter = agentRight.adapter(_ => ())
+    agentLeft.trainingMode()
+    agentRight.trainingMode()
+    simulator.simulate(episodes, episodeLength, List(agentLeft, rightAdapter))
     println("Test...")
-    simulator.simulate(episodes, episodeLength, List(agentLeft, agentRight), false)
+    agentLeft.testMode()
+    agentRight.testMode()
+    simulator.simulate(episodes, episodeLength, List(agentLeft, rightAdapter))

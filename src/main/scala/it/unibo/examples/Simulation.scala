@@ -13,8 +13,7 @@ class Simulation[State, Action](using scheduler: Scheduler)(
 ):
   import environment.*
   private val writer = log.SummaryWriter()
-  def simulate(episodes: Int, episodeLength: Int, agents: Seq[AI.Agent[State, Action]], learn: Boolean = true): Unit =
-    agents.foreach(agent => if learn then agent.trainingMode() else agent.testMode())
+  def simulate(episodes: Int, episodeLength: Int, agents: Seq[AI.Agent[State, Action]]): Unit =
     scheduler.reset()
     for episode <- 0 to episodes do
       agents.foreach(_.reset())
@@ -28,22 +27,19 @@ class Simulation[State, Action](using scheduler: Scheduler)(
         totalRewards = totalRewards.zip(rewards).map(_ + _)
         val nextState = environment.state
         val actionAndRewards = actions.zip(rewards)
-        if learn then
-          agents.zip(actionAndRewards).foreach { case (agent, (action, reward)) =>
-            agent.record(currentState, action, reward, nextState)
-          }
+        agents.zip(actionAndRewards).foreach { case (agent, (action, reward)) =>
+          agent.record(currentState, action, reward, nextState)
+        }
         scheduler.tickStep()
       scheduler.tickEpisode()
-      writer.add_scalar(s"Reward+$learn", totalRewards.sumAll, scheduler.episode)
+      writer.add_scalar(s"Reward", totalRewards.sumAll, scheduler.episode)
       println(s"Episode $episode, statistics: $totalRewards")
 
   def simulateCentralController(
       episodes: Int,
       episodeLength: Int,
-      agent: AI.Agent[State, Seq[Action]],
-      learn: Boolean
+      agent: AI.Agent[State, Seq[Action]]
   ): Unit =
-    if (learn) agent.trainingMode() else agent.testMode()
     val space = agent.act(environment.state)
     scheduler.reset()
     for episode <- 0 to episodes do
@@ -57,8 +53,8 @@ class Simulation[State, Action](using scheduler: Scheduler)(
         val rewards = environment.act(actions)
         totalRewards = totalRewards.zip(rewards).map(_ + _)
         val nextState = environment.state
-        if learn then agent.record(state, actions, rewards.sumAll, nextState)
+        agent.record(state, actions, rewards.sumAll, nextState)
         scheduler.tickStep()
       scheduler.tickEpisode()
-      writer.add_scalar(s"Reward+$learn", totalRewards.sumAll, scheduler.episode)
+      writer.add_scalar(s"Reward", totalRewards.sumAll, scheduler.episode)
       println(s"Episode $episode, statistics: $totalRewards")

@@ -13,7 +13,7 @@ object Q:
       override def apply(state: S, action: A): Double = mutableMap((state, action))
       override def toString(): String = mutableMap.toString()
 
-  def renderBest[S: Enumerable, A: Enumerable](q: Q[S, A]) =
+  def renderBest[S: Enumerable, A: Enumerable](q: Q[S, A]): Unit =
     Enumerable[S]
       .map(state => state -> Enumerable[A].map(action => (action, q(state, action))).maxBy(_._2)._1)
       .foreach((state, action) => println(s"State $state, best action = $action"))
