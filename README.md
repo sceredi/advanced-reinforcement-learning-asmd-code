@@ -7,8 +7,7 @@ c) implementation of Q learning and Deep Q learning
 The MARL topic is really broad and consists of several algorithms and environment dynamics. 
 For the interested ones, I suggest readings the papers listed in this repository: [https://github.com/LantaoYu/MARL-Papers](https://github.com/LantaoYu/MARL-Papers). 
 
-Unfortunately, a good book on the topics still doesn't exist, 
-so the only way to get into it is to read research papers. 
+Also, consider to read the following book: https://www.marl-book.com/
 If you have any questions, please feel free to contact me at gianluca[dot]aguzzi[at]unibo[dot]it
 
 ## Structure
