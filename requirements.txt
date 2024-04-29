@@ -1,3 +1,5 @@
 torch
 torchvision
 tensorboard
+gymnasium
+gymnasium[classic-control]
