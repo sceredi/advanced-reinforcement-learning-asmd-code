@@ -21,7 +21,7 @@ object StochasticGame:
   def createEnvironment[State, Action](
       stochasticGame: StochasticGame[State, Action]
   ): MultiAgentEnvironment[State, Action] =
-    new MultiAgentEnvironment:
+    new MultiAgentEnvironment[State, Action]:
       var state: State = stochasticGame.initialState.sample
       override def act(actions: Seq[Action]): Seq[Double] =
         val previousState = state

@@ -9,7 +9,7 @@ class GridWorldRender(using scheduler: Scheduler)(
     bound: Int,
     await: Int,
     private var each: Int
-) extends Render[BoundedWorldEnvironment.State] {
+) extends Render[BoundedWorldEnvironment.State]:
   private val frame = JFrame(s"Grid world render -- episode: ${scheduler.episode}")
   private val labels = (0 to bound).flatMap(i => (0 to bound).map(j => (i, j) -> new JLabel(s"$i, $j")))
   private val labelsMap = labels.toMap
@@ -20,16 +20,14 @@ class GridWorldRender(using scheduler: Scheduler)(
   frame.setVisible(true)
   frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
   override def render(state: BoundedWorldEnvironment.State): Unit = if (scheduler.episode % each == 0)
-    SwingUtilities.invokeAndWait { () =>
+    SwingUtilities.invokeAndWait: () =>
       frame.setTitle(s"Grid world render -- episode: ${scheduler.episode}")
       labelsMap.values.foreach(_.setBackground(Color.GRAY))
-      state.foreach { case (x, y) =>
-        val label = labelsMap(x, y)
-        label.setBackground(Color.CYAN)
-      }
-    }
+      state.foreach:
+        case (x, y) =>
+          val label = labelsMap(x, y)
+          label.setBackground(Color.CYAN)
     Thread.sleep(await)
 
   def renderEach(value: Int): Unit =
     each = value
-}

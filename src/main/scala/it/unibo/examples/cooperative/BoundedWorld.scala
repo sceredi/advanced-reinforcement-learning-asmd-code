@@ -7,7 +7,7 @@ import scala.util.Random
 enum MovementAction derives Enumerable:
   case Up, Down, Right, Left, NoOp
   def updatePosition(position: (Int, Int), bound: Int): (Int, Int) =
-    def pacmanEffect(coord: Int): Int = if coord < 0 then bound else coord
+    def pacmanEffect(coordinate: Int): Int = if coordinate < 0 then bound else coordinate
     val (x, y) = position
     this match
       case Up => (x, (y + 1) % bound)

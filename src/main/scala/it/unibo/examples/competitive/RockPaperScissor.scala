@@ -9,8 +9,8 @@ import it.unibo.model.core.abstractions.{
 }
 import RockPaperScissor.Choice.*
 
-object RockPaperScissor {
-
+object RockPaperScissor:
+  private val PayOff = 1
   enum Choice derives Enumerable:
     case Rock, Paper, Scissor
 
@@ -25,12 +25,10 @@ object RockPaperScissor {
       (_, actions) => Distribution.one(actions.map(Some(_)))
 
     override def rewardFunction: (State, Seq[Action], State) => Seq[Double] = (_, actions, _) => payoff(actions.toList)
-
     private def payoff(actions: List[Choice]): Seq[Double] = actions match
       case left :: right :: Nil if left == right => List(0, 0)
-      case Rock :: Scissor :: Nil => List(1, -1)
-      case Scissor :: Paper :: Nil => List(1, -1)
-      case Paper :: Rock :: Nil => List(1, -1)
+      case Rock :: Scissor :: Nil => List(PayOff, -PayOff)
+      case Scissor :: Paper :: Nil => List(PayOff, -PayOff)
+      case Paper :: Rock :: Nil => List(PayOff, -PayOff)
       case left :: right :: Nil =>
         payoff(right :: left :: Nil).reverse
-}

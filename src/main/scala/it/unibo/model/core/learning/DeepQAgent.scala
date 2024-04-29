@@ -74,8 +74,7 @@ class DeepQAgent[State, Action: Enumerable](
 
   private def actionFromNet(state: State, network: py.Dynamic): Action =
     val netInput = stateEncoding.toSeq(state)
-    py.`with`(torch.no_grad()) { _ =>
+    py.`with`(torch.no_grad()): _ =>
       val tensor = torch.tensor(netInput.toPythonCopy).view(1, stateEncoding.elements)
       val actionIndex = network(tensor).max(1).bracketAccess(1).item().as[Int]
       Enumerable[Action].toList(actionIndex)
-    }

@@ -35,7 +35,7 @@ object DecayReference:
     scheduler.eachEpisode(_ => update()) // side effect
     override def value: V = tick
 
-  /** a reference that decays following an exponential eacay: (initialValue) * (1-rate)^epsides */
+  /** a reference that decays following an exponential deacay: (initialValue) * (1-rate)^episodes */
   def exponentialDecay(initialValue: Double, rate: Double)(using scheduler: Scheduler): DecayReference[Double] =
     new DecayReference[Double]:
       var time: Int = 0
