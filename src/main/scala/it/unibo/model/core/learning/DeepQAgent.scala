@@ -29,12 +29,12 @@ class DeepQAgent[State, Action: Enumerable](
 
   def slave(): AI.Agent[State, Action] with Learner[State, Action] =
     new AI.Agent[State, Action] with Learner[State, Action]:
-      override def improve(state: State, action: Action, reward: Double, nextState: State): Unit =
-        memory.insert(state, action, reward, nextState)
+      override def improve(state: State, action: Action, reward: Double, nextState: State, done: Boolean): Unit =
+        memory.insert(state, action, reward, nextState, done)
       val behavioural = self.behavioural
       val optimal = self.optimal
 
-  private val optimizer = optim.RMSprop(policyNetwork.parameters(), learningRate.value)
+  private val optimizer = optim.Adam(policyNetwork.parameters(), learningRate.value)
 
   val behavioural: State => Action = state =>
     if random.nextDouble() < epsilon then random.shuffle(Enumerable[Action]).head
@@ -42,8 +42,8 @@ class DeepQAgent[State, Action: Enumerable](
 
   val optimal: State => Action = state => actionFromNet(state, targetNetwork)
 
-  override def improve(state: State, action: Action, reward: Double, nextState: State): Unit =
-    memory.insert(state, action, reward, nextState) // record the current experience in the replay buffer
+  override def improve(state: State, action: Action, reward: Double, nextState: State, done: Boolean): Unit =
+    memory.insert(state, action, reward, nextState, done) // record the current experience in the replay buffer
     val memorySample = memory.sample(batchSize) // sample from the experience to improve the policy network
     if (memory.sample(batchSize).size == batchSize) // wait to have enough samples
       // get S_t, A_t, R_t+1 from the buffer
@@ -53,16 +53,21 @@ class DeepQAgent[State, Action: Enumerable](
       val action = memorySample.map(_.action).toSeq.map(action => Enumerable[Action].indexOf(action)).toPythonCopy
       // Shape: [buffer_size, 1]
       val rewards = torch.tensor(memorySample.map(_.reward).toSeq.toPythonCopy)
+      // Normalize the rewards to avoid explosion gradient
       val nextState =
         memorySample.map(_.nextState).toSeq.map(state => stateEncoding.toSeq(state).toPythonCopy).toPythonCopy
       // Compute the next action, here will be perform the gradient descent
       val stateActionValue = policyNetwork(torch.tensor(states)).gather(1, torch.tensor(action).view(batchSize, 1))
       // Get an approximation of max_Q(s_t, a_t) using the target network
-      val nextStateValues = targetNetwork(torch.tensor(nextState)).max(1).bracketAccess(0).detach()
+      val mask = torch.tensor(memorySample.map(_.done).toSeq.map(done => if done then 0 else 1).toPythonCopy)
+      val nextStateValuesZeros = torch.zeros(batchSize, 1)
+      val nextStateValues = py.`with`(torch.no_grad()): _ =>
+        targetNetwork(torch.tensor(nextState)).max(1).bracketAccess(0).detach() * mask
+
       // Compute the usual expected value
       val expectedValue = (nextStateValues * gamma) + rewards
       // Simular to MSE, but with L1 regularization
-      val criterion = nn.SmoothL1Loss()
+      val criterion = nn.MSELoss()
       val loss = criterion(stateActionValue, expectedValue.unsqueeze(1))
       writer.add_scalar("Loss", loss, scheduler.totalTicks)
       optimizer.zero_grad() // clear old gradient

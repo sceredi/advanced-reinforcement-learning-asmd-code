@@ -21,7 +21,8 @@ class QAgent[State, Action: Enumerable](
       state: State,
       action: Action,
       reward: Double,
-      nextState: State
+      nextState: State,
+      done: Boolean = false
   ): Unit =
     val qT = q(state, action)
     val (_, qMax) = bestOutcome(nextState)

@@ -14,7 +14,13 @@ object AI:
     /** Record the environment response (reward) when the agent is in this state and performs that action moving the
       * environment in the nextState. This experience will be used to improve the agent in the Training mode.
       */
-    def record(state: Observation, action: Action, reward: Double, nextState: Observation): Unit = {}
+    def record(
+        state: Observation,
+        action: Action,
+        reward: Double,
+        nextState: Observation,
+        done: Boolean = false
+    ): Unit = {}
 
     /** Reset any internal agent structure using during test/training */
     def reset(): Unit = {}
@@ -25,7 +31,7 @@ object AI:
   class AgentAdapter[State, Observation, Action](agent: Agent[Observation, Action], conversion: State => Observation)
       extends Agent[State, Action]:
     override def act(state: State): Action = agent.act(conversion(state))
-    override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
+    override def record(state: State, action: Action, reward: Double, nextState: State, done: Boolean = false): Unit =
       agent.record(conversion(state), action, reward, conversion(nextState))
     override def reset(): Unit = agent.reset()
 

@@ -21,10 +21,10 @@ trait Learner[State, Action]:
 
   override def act(state: State): Action = (if mode == AgentMode.Training then behavioural else optimal) (state)
 
-  override def record(state: State, action: Action, reward: Double, nextState: State): Unit =
-    if mode == AgentMode.Training then improve(state, action, reward, nextState)
+  override def record(state: State, action: Action, reward: Double, nextState: State, done: Boolean = false): Unit =
+    if mode == AgentMode.Training then improve(state, action, reward, nextState, done)
 
-  def improve(state: State, action: Action, reward: Double, nextState: State): Unit
+  def improve(state: State, action: Action, reward: Double, nextState: State, done: Boolean): Unit
 object Learner:
   /** Agent internal mode. Some agents, even if are configured in the training mode, remain "stupid" and unable to
     * process experience

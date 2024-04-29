@@ -10,7 +10,7 @@ import scala.util.Random
   */
 trait ReplayBuffer[State, Action]:
   /** Insert a trajectory into the experience replay. */
-  def insert(state: State, action: Action, reward: Double, nextState: State): Unit
+  def insert(state: State, action: Action, reward: Double, nextState: State, done: Boolean): Unit
 
   /** Sample a sequence of experience from the experience replay */
   def sample(batchSize: Int)(using Random): Iterable[Experience[State, Action]]
@@ -19,8 +19,8 @@ trait ReplayBuffer[State, Action]:
 object ReplayBuffer:
   private class QueueBuffer[State, Action](maxSize: Int) extends ReplayBuffer[State, Action]:
     private var memory: List[Experience[State, Action]] = List.empty
-    override def insert(state: State, action: Action, reward: Double, nextState: State): Unit =
-      memory = (Experience(state, action, reward, nextState) :: memory).take(maxSize)
+    override def insert(state: State, action: Action, reward: Double, nextState: State, done: Boolean): Unit =
+      memory = (Experience(state, action, reward, nextState, done) :: memory).take(maxSize)
 
     override def sample(batchSize: Int)(using random: Random): Iterable[Experience[State, Action]] =
       random.shuffle(memory).take(batchSize)
@@ -31,7 +31,7 @@ object ReplayBuffer:
     *
     * It contains a trajectory: s_t, a_t, r_{t+1}, s_{t+1}
     */
-  case class Experience[State, Action](state: State, action: Action, reward: Double, nextState: State)
+  case class Experience[State, Action](state: State, action: Action, reward: Double, nextState: State, done: Boolean)
 
   /** Create a replay buffer with a bounded storage capability. When the buffer is full, it will drop the oldest
     * experience.
