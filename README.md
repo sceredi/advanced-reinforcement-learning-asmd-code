@@ -1,11 +1,11 @@
 # Introduction to Multi-Agent Reinforcement learning (MARL)
-## Code for pervasive computing seminar
+## Code for ASMD seminar
 This repository shows some basic examples of multi-agent reinforcement learning. It contains:
 a) facades for the multi-agent environment and environment dynamics definition
 b) interfaces for agents definition
 c) implementation of Q learning and Deep Q learning
 The MARL topic is really broad and consists of several algorithms and environment dynamics. 
-For the interested ones, I suggest readings the papers listed in this repository: [https://github.com/LantaoYu/MARL-Papers](https://github.com/LantaoYu/MARL-Papers). 
+For the interested ones, I suggest reading the papers listed in this repository: [https://github.com/LantaoYu/MARL-Papers](https://github.com/LantaoYu/MARL-Papers). 
 
 Also, consider to read the following book: https://www.marl-book.com/
 If you have any questions, please feel free to contact me at gianluca[dot]aguzzi[at]unibo[dot]it
@@ -90,17 +90,16 @@ SchedulerListener -- DecayReference: << uses >>
 QLearner -- DecayReference: << uses >>
 DeepQLearner -- DecayReference: << uses >>
 ```
-A `StochasticGame` is the extension of MDP in the realm of multi-agent systems (more details [here](https://en.wikipedia.org/wiki/Stochastic_game)) 
-and it describes the *dynamics* of a `MultiAgentEnvironment`. 
-The latter is a broader term, which means that the dynamics of it could strictly follow the one described by stochastics games.
-In a `MultiAgentEnvironment`, a family of `Agent` lives in it, interacting with the environment and perceiving its `State`. 
-If an `Agent` has the capability to improve himself through experience, it means that he is a `Learner`.
-In order to animate and `MultiAgentEnvironment`, you should use a `Simulation`. 
-It performs several runs, each of which has a length equal to `episodeLength`, using the agents passed at the simulator.
+A `StochasticGame` extends an MDP (Markov Decision Process) to multi-agent systems, offering a framework for understanding the dynamics of a `MultiAgentEnvironment`. More details on Stochastic Games can be found [here](https://en.wikipedia.org/wiki/Stochastic_game). 
+
+A `MultiAgentEnvironment` involves multiple `Agents` interacting within an environment and perceiving its `State`. If an `Agent` can improve itself through experience, it qualifies as a `Learner`.
+
+To simulate a `MultiAgentEnvironment`, a `Simulation` is utilized. It conducts multiple runs, each defined by an `episodeLength`, using the specified agents.
+
 ### Examples
-Using this general structure, in this repository I show two examples:
-- Competitive task, **Rock Paper Scissor**: there are two agents that play the game of rock paper scissor (details [here](https://direct.mit.edu/isal/proceedings/alife2018/30/404/99610)). 
- I show what happens if both agents use the same learning algorithm and what happens when one of the two only partially observes the environment. 
- Here there should be a broader discussion on equilibria and multi-agent dynamics but for the goal of this lesson, these topics are out of the scope. 
- For those interested, I suggest reading this beautiful PhD thesis: [Many-agent Reinforcement Learning](https://discovery.ucl.ac.uk/id/eprint/10124273/)
-- Cooperative, agents alignment: there are N agents that wanna align themselves in a row or in a column. This is a cooperative setting since the agents need to cooperate in order to reach the right position collectively. Here I should several settings that are common in cooperative tasks (independent learners, team learning/shared Q table and centralised learning). This will be a useful introduction towards "infinite" agent learning.
+In this repository, I demonstrate two examples using the general structure outlined above:
+
+- **Competitive Task, Rock Paper Scissors**: Two agents engage in the game of rock paper scissors. More details on this scenario are available [here](https://direct.mit.edu/isal/proceedings/alife2018/30/404/99610). I explore outcomes when both agents employ the same learning algorithm and scenarios where one agent has only partial observation of the environment. While a deeper discussion on equilibria and multi-agent dynamics would be beneficial, these topics are beyond the scope of this lesson. For further reading, consider the PhD thesis: [Many-agent Reinforcement Learning](https://discovery.ucl.ac.uk/id/eprint/10124273/).
+
+- **Cooperative Task, Agent Alignment**: Here, `N` agents aim to align themselves either in a row or a column. This setup is inherently cooperative, as agents must work together to achieve the correct positioning. I discuss several common frameworks in cooperative tasks, including independent learners, team learning with a shared Q-table, and centralized learning. This serves as an introduction to "infinite" agent learning.
+
