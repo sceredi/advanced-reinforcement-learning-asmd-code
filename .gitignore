@@ -114,3 +114,9 @@ project/plugins/project/
 hs_err_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/scala,intellij+all,sbt
+
+# python env
+env/
+
+# nix stuff
+.direnv/
