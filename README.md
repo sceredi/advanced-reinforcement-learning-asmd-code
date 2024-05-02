@@ -10,6 +10,25 @@ For the interested ones, I suggest reading the papers listed in this repository:
 Also, consider to read the following book: https://www.marl-book.com/
 If you have any questions, please feel free to contact me at gianluca[dot]aguzzi[at]unibo[dot]it
 
+## Installation
+To install the project, you need to have sbt installed on your machine and python >= 3.8
+Firs of all, after cloning the repository, you need to create a virtual environment and install the requirements:
+```shell
+python3 -m venv env
+source env/bin/activate
+```
+Now, you can install the requirements:
+```shell
+pip install -r requirements.txt
+```
+
+To run the project, you need to compile the scala code and then run the python code:
+```shell
+sbt compile
+sbt run
+```
+
+If everything is ok, typying 13 you should see the GYM example shown in class.
 ## Structure
 ```mermaid
 classDiagram
