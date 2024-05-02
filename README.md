@@ -122,3 +122,13 @@ In this repository, I demonstrate two examples using the general structure outli
 
 - **Cooperative Task, Agent Alignment**: Here, `N` agents aim to align themselves either in a row or a column. This setup is inherently cooperative, as agents must work together to achieve the correct positioning. I discuss several common frameworks in cooperative tasks, including independent learners, team learning with a shared Q-table, and centralized learning. This serves as an introduction to "infinite" agent learning.
 
+
+### Exercise
+After running the examples, try to extend the codebase with one of the following exercise:
+- try to incorporate [Petting Zoo](https://pettingzoo.farama.org/index.html) environments into the simulation and verify the results using Deep Q learning (shared, independent, centralised)
+- try to create another environment that simulate a flock of drones that need to stay connected. Try to:
+  - understand how can you create the right reward function to create a flock (cohesion + separation)
+  - discretize the action space (i.e., 8 directions)
+  - understand the right observation space (i.e., the position of the drones? The position of the N nearest drones?)
+  - implement the environment and the agents
+  - verify if the agents are able to learn the right policy, i.e., stay connected and create a flock
