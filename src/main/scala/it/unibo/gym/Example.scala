@@ -7,6 +7,7 @@ import me.shadaj.scalapy.py
 
 import scala.util.Random
 
+// Type alias for the Gym environment
 type Observation = py.Dynamic
 type Reward = Double
 type Done = Boolean
@@ -35,13 +36,12 @@ object Action:
     override def toSeq(elem: py.Dynamic): Seq[Double] = elem.as[Seq[Double]]
   val gym = py.module("gymnasium")
   val environment = gym.make("CartPole-v1")
-
   var (observationOld, _) = environment.reset().as[ResetReturn]
   val episodes = 200
   val episodeMaxLength = 200
   val renderEach = 10
   val memory: ReplayBuffer[py.Dynamic, Action] = ReplayBuffer.bounded(100000)
-  val decay: DecayReference[Double] = DecayReference.exponentialDecay(0.5, 0.01).bounded(0.05)
+  val decay: DecayReference[Double] = DecayReference.exponentialDecay(0.9, 0.01).bounded(0.05)
   val agent =
     DeepQAgent(memory, decay, gamma = 0.99, learningRate = 0.0005, hiddenSize = 128, batchSize = 128, updateEach = 1000)
   agent.trainingMode()
@@ -70,7 +70,7 @@ object Action:
   var (observation, _) = testEnv.reset().as[ResetReturn]
   var done = false
   while !done do
-    val action = agent.behavioural(observation)
+    val action = agent.optimal(observation)
     val (observationNew, reward, doneCurrent, truncated, info) = testEnv.step(action.value).as[StepReturn]
     done = doneCurrent || truncated
     observation = observationNew
