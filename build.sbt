@@ -3,7 +3,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 // Properties for the Python interpreter
 initialize ~= { _ =>
-  val result = java.lang.Runtime.getRuntime.exec(Array("python3", "--version"))
+  val result = java.lang.Runtime.getRuntime.exec(Array("python", "--version"))
   result.waitFor()
   val line = scala.io.Source.fromInputStream(result.getInputStream).getLines().next()
   val version = line.split(" ")(1)
