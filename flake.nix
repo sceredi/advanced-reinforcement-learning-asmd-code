@@ -43,6 +43,8 @@
               # add them to PYTHONPATH and thus make them accessible from within the venv.
               numpy
               requests
+
+              pygame
             ]);
 
           # Run this command, only after creating the virtual environment
